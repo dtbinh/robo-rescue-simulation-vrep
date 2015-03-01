@@ -20,9 +20,7 @@ if (sim_call_type==sim_childscriptcall_initialization) then
 	lastTime=simGetSimulationTime()
 
 	-- publish for all 3 axes
-	simExtROS_enablePublisher(rosName .. 'X', 1, simros_strmcmd_get_float_signal, -1, -1, objName .. 'SenseX')
-	simExtROS_enablePublisher(rosName .. 'Y', 1, simros_strmcmd_get_float_signal, -1, -1, objName .. 'SenseY')
-	simExtROS_enablePublisher(rosName .. 'Z', 1, simros_strmcmd_get_float_signal, -1, -1, objName .. 'SenseZ')
+	simExtROS_enablePublisher(rosName , 1, simros_strmcmd_get_string_signal , -1, -1, objName .. 'Sense')
 end 
 
 if (sim_call_type==sim_childscriptcall_sensing) then
@@ -35,14 +33,12 @@ if (sim_call_type==sim_childscriptcall_sensing) then
 	local gyro={0,0,0}
 	local dt=currentTime-lastTime
 	if (dt~=0) then
-		-- gyroscop data (what units?)
+		-- gyroscop data units: rad/s
 		gyro={euler[1]/dt, euler[2]/dt, euler[3]/dt}
 	end
 	
 	-- push values for all axes
-	simSetFloatSignal(objName .. 'SenseX', gyro[1])
-	simSetFloatSignal(objName .. 'SenseY', gyro[2])
-	simSetFloatSignal(objName .. 'SenseZ', gyro[3])
+	simSetStringSignal(objName..'Sense',string.format("%.8f",gyro[1])..';'..string.format("%.8f",gyro[2])..';'..string.format("%.8f",gyro[3]))
 	
 	-- data for next round
 	oldTransformationMatrix=simCopyMatrix(transformationMatrix)
