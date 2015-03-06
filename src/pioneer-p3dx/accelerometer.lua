@@ -1,6 +1,8 @@
 -- ACCELEROMETER
 
 if (sim_call_type==sim_childscriptcall_initialization) then
+	-- change locale used in script
+	os.setlocale("en_US.UTF-8")
 	-- objects (sensors) and names associated with this sensor unit
 	objHandle=simGetObjectAssociatedWithScript(sim_handle_self)
 	objName=simGetObjectName(objHandle)
@@ -29,6 +31,7 @@ if (sim_call_type==sim_childscriptcall_sensing) then
 	-- publish accel data for each axis. units: m/s
 	if (result>0) then
 		accel={force[1]/mass,force[2]/mass,force[3]/mass}
+		--push data in format X_axis;Y_axis;Z_axis
 		simSetStringSignal(objName..'Sense',string.format("%.8f",accel[1])..';'..string.format("%.8f",accel[2])..';'..string.format("%.8f",accel[3]))
 	end
 end 

@@ -1,6 +1,8 @@
 -- GYRO SENSOR
 
 if (sim_call_type==sim_childscriptcall_initialization) then 
+	-- change locale used in script
+	os.setlocale("en_US.UTF-8")
 	-- objects (sensors) and names associated with this sensor unit
 	objHandle=simGetObjectAssociatedWithScript(sim_handle_self)
 	objName=simGetObjectName(objHandle)
@@ -37,7 +39,7 @@ if (sim_call_type==sim_childscriptcall_sensing) then
 		gyro={euler[1]/dt, euler[2]/dt, euler[3]/dt}
 	end
 	
-	-- push values for all axes
+	-- push values for all axes in format X_axis;Y_axis;Z_axis
 	simSetStringSignal(objName..'Sense',string.format("%.8f",gyro[1])..';'..string.format("%.8f",gyro[2])..';'..string.format("%.8f",gyro[3]))
 	
 	-- data for next round
