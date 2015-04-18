@@ -1,5 +1,9 @@
 -- LASER SCANNER
 
+function to_rad(e)
+	return e * (math.pi/180)
+end
+
 if (sim_call_type==sim_childscriptcall_initialization) then 
 	-- objects (sensors) and names associated with this sensor unit
 	objHandle=simGetObjectAssociatedWithScript(sim_handle_self)
@@ -43,9 +47,11 @@ if (sim_call_type==sim_childscriptcall_sensing) then
 		end
 	end
 	
+	-- ros values are in radians
 	table.insert(values, 0) -- min angle
-	table.insert(values, scanningAngle) -- max angle
-	table.insert(values, stepSize)
+	table.insert(values, to_rad(scanningAngle)) -- max angle
+	table.insert(values, to_rad(stepSize))
+
 	simSetStringSignal(objName .. 'Sense', simPackFloats(values))
 end 
 
