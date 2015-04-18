@@ -20,7 +20,7 @@ if (sim_call_type==sim_childscriptcall_initialization) then
 	forceSensorHandle=objChilds[1] -- force sensor of accel meter
 	massObjectHandle=simGetObjectChild(forceSensorHandle, 0)
 	result,mass=simGetObjectFloatParameter(massObjectHandle,3005)
-	
+	GRAVITY=9.80
 	-- init publishers for all 3 axes
 	simExtROS_enablePublisher(rosName , 1, simros_strmcmd_get_string_signal , -1, -1, objName .. 'Sense')
 	
@@ -30,7 +30,7 @@ if (sim_call_type==sim_childscriptcall_sensing) then
 	result,force=simReadForceSensor(forceSensorHandle)
 	-- publish accel data for each axis. units: m/s
 	if (result>0) then
-		accel={force[1]/mass,force[2]/mass,force[3]/mass}
+		accel={force[1]/mass * -1,force[2]/mass * -1,(force[3]/mass)*-1 - GRAVITY}
 		--push data in format X_axis;Y_axis;Z_axis
 		simSetStringSignal(objName..'Sense',string.format("%.8f",accel[1])..';'..string.format("%.8f",accel[2])..';'..string.format("%.8f",accel[3]))
 	end
