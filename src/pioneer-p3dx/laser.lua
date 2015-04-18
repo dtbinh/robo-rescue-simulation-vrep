@@ -1,5 +1,9 @@
 -- LASER SCANNER
 
+function to_rad(e)
+	return e * (math.pi/180)
+end
+
 if (sim_call_type==sim_childscriptcall_initialization) then 
 	-- objects (sensors) and names associated with this sensor unit
 	objHandle=simGetObjectAssociatedWithScript(sim_handle_self)
@@ -26,25 +30,28 @@ if (sim_call_type==sim_childscriptcall_sensing) then
 	scanningAngle=tonumber(simGetScriptSimulationParameter(sim_handle_self,"scanningAngle"))
 	-- must be in [0.1, 5]
 	scanningDensity=tonumber(simGetScriptSimulationParameter(sim_handle_self,"scanningDensity"))
+	values={}
 	
 	pts=scanningAngle*scanningDensity+1
 	p=-scanningAngle*math.pi/360
 	stepSize=math.pi/(scanningDensity*180)
-	values={}
 	modelInverseMatrix=simGetInvertedMatrix(simGetObjectMatrix(objHandle,-1))
 	for i=0,pts,1 do
 		simSetJointPosition(jointHandle,p)
 		p=p+stepSize
 		r,dist=simHandleProximitySensor(laserHandle) -- pt is RELATIVE to te rotating laser beam!
-		if(r<=0) then dist=0 end
 		if r>0 then
-			table.insert(values,dist)
+			table.insert(values, dist)
+		else
+			table.insert(values, -1) -- measurent unsuccessful or out of range
 		end
 	end
 	
-	table.insert(values,0) -- min angle
-	table.insert(values,scanningAngle) -- max angle
-	table.insert(values,stepSize)
+	-- ros values are in radians
+	table.insert(values, 0) -- min angle
+	table.insert(values, to_rad(scanningAngle)) -- max angle
+	table.insert(values, to_rad(stepSize))
+
 	simSetStringSignal(objName .. 'Sense', simPackFloats(values))
 end 
 
